@@ -17,6 +17,8 @@
     "fixture:bundle": "bash scripts/package-fixture.sh",
     "fixture:upload": "node scripts/upload-fixture.mjs",
     "setup:secrets": "node scripts/setup-local-secrets.mjs",
+    "secret:copy": "node scripts/clipboard-secret.mjs",
+    "secret:clear": "node scripts/clipboard-secret.mjs --clear",
     "smoke:replay": "node scripts/smoke-replay.mjs",
     "gate:production": "node scripts/production-gate.mjs"
   },

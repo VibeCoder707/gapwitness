@@ -30,6 +30,8 @@ npm run dev
 
 The setup command accepts the API key through a hidden Terminal prompt, creates `.env.local` with private file permissions, and generates a new signing secret every time it runs. Open `http://localhost:3000`. Until the fixture file ID is added, the app intentionally uses its bundled reference replay.
 
+On macOS, `npm run secret:copy -- VARIABLE_NAME` copies one allowlisted deployment value without printing it; `npm run secret:clear` clears the clipboard afterward.
+
 Environment variables:
 
 - `OPENAI_API_KEY`: server-side API key.
