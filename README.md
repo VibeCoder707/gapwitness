@@ -58,6 +58,7 @@ npm run build
 ## Deployment
 
 1. Run `npm run fixture:bundle`. Upload `dist/seat-limit-race.zip` to the OpenAI Files API and retain its file ID. The bundle includes its locked Vitest runtime so the hosted container can keep networking disabled.
+   For the guided setup, `npm run fixture:upload` performs the upload with the stored API key and saves the returned file ID privately.
 2. Import this repository into Vercel.
 3. Add the three required environment variables as Vercel secrets.
 4. Deploy, then confirm `/api/health` reports `liveReady: true` without revealing identifiers.
