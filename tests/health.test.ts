@@ -22,6 +22,7 @@ describe("deployment health", () => {
     vi.stubEnv("OPENAI_API_KEY", "test-key");
     vi.stubEnv("OPENAI_FIXTURE_FILE_ID", "file-test");
     vi.stubEnv("DEMO_SIGNING_SECRET", "test-secret-that-is-long-enough-for-health");
+    vi.stubEnv("GAPWITNESS_LIVE_ENABLED", "true");
     const body = await GET().json();
     expect(body).toMatchObject({ status: "ready", liveReady: true, replayReady: true });
   });

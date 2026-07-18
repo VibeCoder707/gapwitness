@@ -47,6 +47,7 @@ const contents = [
   `OPENAI_API_KEY=${apiKey}`,
   `OPENAI_FIXTURE_FILE_ID=${existingValue(existing, "OPENAI_FIXTURE_FILE_ID")}`,
   `DEMO_SIGNING_SECRET=${signingSecret}`,
+  `GAPWITNESS_LIVE_ENABLED=${existingValue(existing, "GAPWITNESS_LIVE_ENABLED")}`,
   `GAPWITNESS_DEMO_MODE=${existingValue(existing, "GAPWITNESS_DEMO_MODE")}`,
   `NEXT_PUBLIC_REPOSITORY_URL=${existingValue(existing, "NEXT_PUBLIC_REPOSITORY_URL")}`,
   "",

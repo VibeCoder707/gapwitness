@@ -46,12 +46,20 @@ beforeEach(() => {
   vi.stubEnv("OPENAI_API_KEY", "test-key");
   vi.stubEnv("OPENAI_FIXTURE_FILE_ID", "file_fixture");
   vi.stubEnv("DEMO_SIGNING_SECRET", "test-secret-that-is-long-enough-for-hmac");
+  vi.stubEnv("GAPWITNESS_LIVE_ENABLED", "true");
   mocks.create.mockReset();
 });
 
 afterEach(() => vi.unstubAllEnvs());
 
 describe("live workflow validation", () => {
+  it("keeps paid calls disabled unless live mode is explicitly enabled", async () => {
+    vi.stubEnv("GAPWITNESS_LIVE_ENABLED", "");
+    const result = await runAnalysis("request-replay-safe", () => undefined);
+    expect(result.mode).toBe("replay");
+    expect(mocks.create).not.toHaveBeenCalled();
+  });
+
   it("derives the baseline from hosted shell output", async () => {
     mocks.create.mockResolvedValueOnce(liveAnalysisResponse());
     const stages: string[] = [];

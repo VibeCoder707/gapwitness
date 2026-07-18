@@ -11,7 +11,7 @@ export const maxDuration = 180;
 export async function POST(request: Request) {
   const parsed = analyzeInputSchema.safeParse(await boundedJson(request).catch(() => null));
   if (!parsed.success) return Response.json({ error: "Only the guided seat-limit scenario is accepted." }, { status: 400 });
-  const liveConfigured = Boolean(process.env.OPENAI_API_KEY && process.env.OPENAI_FIXTURE_FILE_ID) && process.env.GAPWITNESS_DEMO_MODE !== "replay";
+  const liveConfigured = process.env.GAPWITNESS_LIVE_ENABLED === "true" && Boolean(process.env.OPENAI_API_KEY && process.env.OPENAI_FIXTURE_FILE_ID) && process.env.GAPWITNESS_DEMO_MODE !== "replay";
   if (liveConfigured && !withinRateWindow("paid-analysis", 10, 60_000)) return Response.json({ error: "The live demo budget guard is active. Try again in one minute or use the bundled reference replay." }, { status: 429 });
   const finishGuard = beginGuard("analysis:seat-limit-race", 180_000);
   if (!finishGuard) return Response.json({ error: "An analysis is already starting. Wait a few seconds before retrying." }, { status: 429 });

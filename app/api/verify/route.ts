@@ -16,7 +16,7 @@ export async function POST(request: Request) {
   let claims;
   try { claims = verifyContinuation(parsed.data.continuationToken); }
   catch { return Response.json({ error: "This analysis continuation is invalid or expired." }, { status: 401 }); }
-  const liveConfigured = Boolean(process.env.OPENAI_API_KEY && process.env.OPENAI_FIXTURE_FILE_ID) && process.env.GAPWITNESS_DEMO_MODE !== "replay";
+  const liveConfigured = process.env.GAPWITNESS_LIVE_ENABLED === "true" && Boolean(process.env.OPENAI_API_KEY && process.env.OPENAI_FIXTURE_FILE_ID) && process.env.GAPWITNESS_DEMO_MODE !== "replay";
   if (liveConfigured && !withinRateWindow("paid-verification", 10, 60_000)) return Response.json({ error: "The live verification budget guard is active. Try again in one minute." }, { status: 429 });
   const tokenKey = createHash("sha256").update(parsed.data.continuationToken).digest("hex").slice(0, 20);
   const finishGuard = beginGuard(`verify:${tokenKey}`, 180_000);

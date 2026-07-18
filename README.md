@@ -37,6 +37,7 @@ Environment variables:
 - `OPENAI_API_KEY`: server-side API key.
 - `OPENAI_FIXTURE_FILE_ID`: OpenAI Files API ID for a zip of `fixtures/seat-limit-race`.
 - `DEMO_SIGNING_SECRET`: at least 32 random characters for 30-minute continuation tokens.
+- `GAPWITNESS_LIVE_ENABLED=true`: explicit paid-call switch; omitted or false keeps the deployment replay-only even when credentials exist.
 - `GAPWITNESS_DEMO_MODE=replay`: optional explicit replay-only mode.
 
 No secret is exposed to the browser. The API accepts no uploads, URLs, repositories, prompts, credentials, or arbitrary commands.
@@ -65,7 +66,7 @@ npm run build
    For the guided setup, `npm run fixture:upload` performs the upload with the stored API key and saves the returned file ID privately.
 2. Import this repository into Vercel.
 3. Add the three required environment variables as Vercel secrets.
-4. Deploy, then confirm `/api/health` reports `liveReady: true` without revealing identifiers.
+4. Deploy in replay-only mode first. Add `GAPWITNESS_LIVE_ENABLED=true` only when the project budget and live-validation window are approved, then confirm `/api/health` reports `liveReady: true` without revealing identifiers.
 5. Run `npm run gate:production -- https://your-production-host`. This performs five complete live passes, rejects any invalid evidence or run lasting three minutes or more, and writes sanitized proof to `artifacts/production-gate.json`.
 6. Review and commit `fixtures/replay/last-verified-run.json`, redeploy, and confirm an intentionally forced replay says **Replay of last verified run · not a new live run**. The artifact excludes continuation tokens, request IDs, response IDs, and container IDs.
 

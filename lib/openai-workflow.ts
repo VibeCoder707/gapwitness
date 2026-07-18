@@ -60,7 +60,7 @@ function openAIClient() {
 }
 
 function liveEnabled() {
-  return Boolean(process.env.OPENAI_API_KEY && process.env.OPENAI_FIXTURE_FILE_ID) && process.env.GAPWITNESS_DEMO_MODE !== "replay";
+  return process.env.GAPWITNESS_LIVE_ENABLED === "true" && Boolean(process.env.OPENAI_API_KEY && process.env.OPENAI_FIXTURE_FILE_ID) && process.env.GAPWITNESS_DEMO_MODE !== "replay";
 }
 
 export function usageFrom(response: Record<string, unknown>): UsageMetrics {
