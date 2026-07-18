@@ -1,0 +1,15 @@
+{
+  "name": "@gapwitness/seat-limit-race",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "test": "npm run test:fixture",
+    "test:fixture": "node node_modules/vitest/vitest.mjs run tests/seat-service.test.ts",
+    "test:counterexample": "node node_modules/vitest/vitest.mjs run counterexample/generated.test.ts"
+  },
+  "devDependencies": {
+    "typescript": "6.0.2",
+    "vitest": "4.1.10"
+  }
+}

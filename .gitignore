@@ -1,0 +1,13 @@
+node_modules/
+.next/
+out/
+coverage/
+playwright-report/
+test-results/
+.env*
+!.env.example
+.DS_Store
+*.tsbuildinfo
+dist/
+OpenAI Build Week Rules.pdf
+openai_build_week_official_rules.md

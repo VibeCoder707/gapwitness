@@ -1,0 +1,16 @@
+{
+  "fixture": "seat-limit-race",
+  "revision": "fixture-v1",
+  "recordedOn": "2026-07-18",
+  "algorithm": "sha256",
+  "immutableEvidence": [
+    { "path": "ISSUE.md", "lines": 9, "sha256": "461f54963d602abcb46c20c8931c9416f360aa9788d3652584a9181b031026d9" },
+    { "path": "src/seat-service.ts", "lines": 64, "sha256": "444ff0deb15f3e416890dd0b629ba3511ae2991f1c3107dd233277e3bf25014a" },
+    { "path": "tests/seat-service.test.ts", "lines": 107, "sha256": "45d0f0c432c2548563b956a882171e970e7913e8895c8adc6bebf355ef515482" },
+    { "path": "counterexample/seat-service.concurrent.test.ts", "lines": 27, "sha256": "090bc9a62f4f01be13b6fd532f576d59823bf28bed8f9c57808edd25fe12f30b" },
+    { "path": "ci-report.json", "lines": 11, "sha256": "5b1f2123f05f110fb27e313d76591d8601eccc51b5626e51bb080c2f6d3c8102" },
+    { "path": "package.json", "lines": 15, "sha256": "5d6c397ed36e2d2e9783f4a8ebfdce5d4025257f9befeb9e2b8f44632c355d4d" },
+    { "path": "package-lock.json", "lines": 1279, "sha256": "cb90abb90c9ecf70f00188f50afb5b935abfe66209f82d4105edd40b791759fc" },
+    { "path": "change.diff", "lines": 69, "sha256": "9bcb74912b10ed2d7d9ec12b8f71c059d79c085bfc3ee50324fc8d6cf0b542cf" }
+  ]
+}
