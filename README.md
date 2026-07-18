@@ -6,6 +6,8 @@ The guided fixture looks reassuring: all 18 baseline tests pass. GapWitness show
 
 > Live demo: [gapwitness.vercel.app](https://gapwitness.vercel.app) — no login or rebuild required.
 
+> Cost-safe state: the deployed demo is intentionally replay-only while candidate selection is underway. Paid GPT‑5.6 calls require an explicit `GAPWITNESS_LIVE_ENABLED=true` release decision.
+
 > Public repository: [github.com/VibeCoder707/gapwitness](https://github.com/VibeCoder707/gapwitness)
 
 ## Judge flow

@@ -23,7 +23,7 @@ Last updated: **July 18, 2026 (CEST)**.
 
 ## External release evidence still required
 
-- Production credentials and the uploaded fixture are configured; the public health and replay smoke checks pass at `https://gapwitness.vercel.app`.
+- Production credentials and the uploaded fixture are configured, but paid calls require a separate explicit switch. The public health endpoint currently proves `replay_only`, and the replay smoke check passes at `https://gapwitness.vercel.app`.
 - Complete at least one real GPT‑5.6 Sol analysis and verification locally, then the five-run gate against production.
 - Set the $25 OpenAI project budget before paid validation.
 - Perform signed-out manual checks in released Chrome, Safari, Firefox, and Edge plus a screen-reader pass.

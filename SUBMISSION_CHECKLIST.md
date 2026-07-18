@@ -10,7 +10,7 @@ Internal cutoff: **July 21, 2026 at 18:00 CEST**. Official rules deadline: **Jul
 
 ## Product readiness
 
-- [x] Production `/api/health` reports `liveReady: true` and exposes no identifiers or secrets.
+- [ ] Before final judging, enable the approved live window and confirm production `/api/health` reports `liveReady: true`; it currently reports `replay_only` by deliberate cost control.
 - [ ] Five consecutive production runs locate R3, validate every citation, and confirm the counterexample.
 - [ ] The five-run gate has captured a last-verified replay and it is unmistakably labeled as not new.
 - [x] Automated keyboard, reduced-motion, WCAG A/AA, Chromium, Firefox, WebKit, desktop, tablet, and mobile checks pass.
