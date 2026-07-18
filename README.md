@@ -4,7 +4,7 @@ GapWitness is an evidence-backed validation bench for AI-generated code. It maps
 
 The guided fixture looks reassuring: all 18 baseline tests pass. GapWitness shows that the concurrency guarantee is still unproven, then uses a two-arrival barrier to make the race fail every time.
 
-> Live demo: `PENDING — add the production Vercel URL before submission.` The final URL must require no login or rebuild.
+> Live demo: [gapwitness.vercel.app](https://gapwitness.vercel.app) — no login or rebuild required.
 
 > Public repository: [github.com/VibeCoder707/gapwitness](https://github.com/VibeCoder707/gapwitness)
 

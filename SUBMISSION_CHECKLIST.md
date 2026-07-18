@@ -10,7 +10,7 @@ Internal cutoff: **July 21, 2026 at 18:00 CEST**. Official rules deadline: **Jul
 
 ## Product readiness
 
-- [ ] Production `/api/health` reports `liveReady: true` and exposes no identifiers or secrets.
+- [x] Production `/api/health` reports `liveReady: true` and exposes no identifiers or secrets.
 - [ ] Five consecutive production runs locate R3, validate every citation, and confirm the counterexample.
 - [ ] The five-run gate has captured a last-verified replay and it is unmistakably labeled as not new.
 - [x] Automated keyboard, reduced-motion, WCAG A/AA, Chromium, Firefox, WebKit, desktop, tablet, and mobile checks pass.
@@ -21,7 +21,7 @@ Internal cutoff: **July 21, 2026 at 18:00 CEST**. Official rules deadline: **Jul
 ## Repository
 
 - [x] Public MIT repository URL added to README and Devpost.
-- [ ] Live demo URL added prominently to README and Devpost.
+- [x] Live demo URL added prominently to README and the Devpost draft.
 - [ ] Clean install, test, and deployment instructions verified from a fresh checkout.
 - [x] `THIRD_PARTY_NOTICES.md`, `DECISIONS.md`, and dated commits checked.
 - [ ] Run `/feedback` in primary task `019f72a8-0ee4-7041-8b20-9e65108f671f` and record the returned Session ID: `PENDING`.

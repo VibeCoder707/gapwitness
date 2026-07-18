@@ -23,10 +23,9 @@ Last updated: **July 18, 2026 (CEST)**.
 
 ## External release evidence still required
 
-- Configure the OpenAI API key, uploaded fixture file ID, and signing secret.
+- Production credentials and the uploaded fixture are configured; the public health and replay smoke checks pass at `https://gapwitness.vercel.app`.
 - Complete at least one real GPT‑5.6 Sol analysis and verification locally, then the five-run gate against production.
-- Restore GitHub authentication, publish the repository, and add its URL.
-- Authenticate Vercel, deploy, set the $25 OpenAI project budget, and add the live URL.
+- Set the $25 OpenAI project budget before paid validation.
 - Perform signed-out manual checks in released Chrome, Safari, Firefox, and Edge plus a screen-reader pass.
 - Run the primary task’s `/feedback` flow and record the returned Session ID.
 - Record and publish the entrant-narrated video, complete Devpost, verify all links, submit, and retain the receipt.
