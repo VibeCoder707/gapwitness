@@ -20,7 +20,7 @@ Internal cutoff: **July 21, 2026 at 18:00 CEST**. Official rules deadline: **Jul
 
 ## Repository
 
-- [ ] Public MIT repository URL added to README and Devpost.
+- [x] Public MIT repository URL added to README and Devpost.
 - [ ] Live demo URL added prominently to README and Devpost.
 - [ ] Clean install, test, and deployment instructions verified from a fresh checkout.
 - [x] `THIRD_PARTY_NOTICES.md`, `DECISIONS.md`, and dated commits checked.

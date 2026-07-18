@@ -6,6 +6,8 @@ The guided fixture looks reassuring: all 18 baseline tests pass. GapWitness show
 
 > Live demo: `PENDING — add the production Vercel URL before submission.` The final URL must require no login or rebuild.
 
+> Public repository: [github.com/VibeCoder707/gapwitness](https://github.com/VibeCoder707/gapwitness)
+
 ## Judge flow
 
 1. Open the live demo and select **Analyze the change**.
