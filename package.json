@@ -15,6 +15,7 @@
     "test:counterexample": "vitest run --config vitest.counterexample.config.ts",
     "test:e2e": "playwright test",
     "fixture:bundle": "bash scripts/package-fixture.sh",
+    "setup:secrets": "node scripts/setup-local-secrets.mjs",
     "smoke:replay": "node scripts/smoke-replay.mjs",
     "gate:production": "node scripts/production-gate.mjs"
   },
