@@ -17,6 +17,7 @@ const sourceCreate = `  async createSeat(workspaceId: string, email: string) {
 
     return this.store.insert(workspaceId, email);
   }`;
+const executedTest = "await Promise.allSettled([]); console.log(`GAPWITNESS_RESULT fulfilled=2 rejected=0 active=2`);";
 
 function requirementGraph(excerpt = sourceCreate) {
   return {
@@ -88,7 +89,7 @@ describe("live workflow validation", () => {
     mocks.create.mockResolvedValueOnce({
       id: "resp_verify",
       output_text: JSON.stringify({
-        generatedTest: "Promise.allSettled([]); console.log(`GAPWITNESS_RESULT fulfilled=2 rejected=0 active=2`);",
+        generatedTest: "This model field must not be displayed because the shell artifact is authoritative.",
         command: "fabricated", exitCode: 0, stdout: "fabricated",
         expectedBehavior: "One succeeds.", observedBehavior: "Unknown.", status: "not_reproduced",
         evidence: [{ artifactType: "source", path: "src/seat-service.ts", startLine: 45, endLine: 45, excerpt: "    const activeSeats = this.store.countActive(workspaceId);", relationship: "contradicts" }],
@@ -96,13 +97,44 @@ describe("live workflow validation", () => {
       usage: { input_tokens: 50, output_tokens: 10, input_tokens_details: { cached_tokens: 40, cache_write_tokens: 0 } },
       output: [
         { type: "shell_call", call_id: "call_verify", action: { commands: ["npm run test:counterexample"] } },
-        { type: "shell_call_output", call_id: "call_verify", output: [{ stdout: "GAPWITNESS_RESULT fulfilled=2 rejected=0 active=2", stderr: "AssertionError", outcome: { type: "exit", exit_code: 1 } }] },
+        { type: "shell_call_output", call_id: "call_verify", output: [{ stdout: `GAPWITNESS_RESULT fulfilled=2 rejected=0 active=2\nGAPWITNESS_TEST_BEGIN\n${executedTest}\nGAPWITNESS_TEST_END`, stderr: "AssertionError", outcome: { type: "exit", exit_code: 1 } }] },
       ],
     });
     const result = await runVerification({ scenario: "seat-limit-race", responseId: "resp_analysis_123", containerId: "cntr_123", mode: "live", exp: Date.now() + 60_000 }, "request-verify", () => undefined);
     expect(result.status).toBe("counterexample_confirmed");
     expect(result.exitCode).toBe(1);
     expect(result.command).toBe("npm run test:counterexample");
+    expect(result.generatedTest).toBe(executedTest);
+  });
+
+  it("retries an invalid verification citation once", async () => {
+    const invalid = {
+      id: "resp_verify_invalid",
+      output_text: JSON.stringify({
+        generatedTest: executedTest, command: "ignored", exitCode: 0, stdout: "ignored",
+        expectedBehavior: "One succeeds.", observedBehavior: "Two succeeded.", status: "counterexample_confirmed",
+        evidence: [{ artifactType: "source", path: "src/seat-service.ts", startLine: 45, endLine: 45, excerpt: "fabricated", relationship: "contradicts" }],
+      }),
+      usage: { input_tokens: 50, output_tokens: 10, input_tokens_details: { cached_tokens: 40, cache_write_tokens: 0 } },
+      output: [
+        { type: "shell_call", call_id: "call_verify", action: { commands: ["npm run test:counterexample"] } },
+        { type: "shell_call_output", call_id: "call_verify", output: [{ stdout: `GAPWITNESS_RESULT fulfilled=2 rejected=0 active=2\nGAPWITNESS_TEST_BEGIN\n${executedTest}\nGAPWITNESS_TEST_END`, stderr: "AssertionError", outcome: { type: "exit", exit_code: 1 } }] },
+      ],
+    };
+    const corrected = {
+      id: "resp_verify_corrected", output_text: JSON.stringify({
+        generatedTest: executedTest, command: "ignored", exitCode: 1, stdout: "ignored",
+        expectedBehavior: "One succeeds.", observedBehavior: "Two succeeded.", status: "counterexample_confirmed",
+        evidence: [{ artifactType: "source", path: "src/seat-service.ts", startLine: 45, endLine: 45, excerpt: "    const activeSeats = this.store.countActive(workspaceId);", relationship: "contradicts" }],
+      }),
+      usage: { input_tokens: 20, output_tokens: 5, input_tokens_details: { cached_tokens: 15, cache_write_tokens: 0 } }, output: [],
+    };
+    mocks.create.mockResolvedValueOnce(invalid).mockResolvedValueOnce(corrected);
+    const result = await runVerification({ scenario: "seat-limit-race", responseId: "resp_analysis_123", containerId: "cntr_123", mode: "live", exp: Date.now() + 60_000 }, "request-verify-retry", () => undefined);
+    expect(mocks.create).toHaveBeenCalledTimes(2);
+    expect(result.status).toBe("counterexample_confirmed");
+    expect(result.evidence.every((item) => item.verified)).toBe(true);
+    expect(result.usage.inputTokens).toBe(70);
   });
 
   it("extracts shell outputs by call id", () => {

@@ -5,8 +5,8 @@ const nextConfig: NextConfig = {
   reactStrictMode: true,
   outputFileTracingRoot: process.cwd(),
   outputFileTracingIncludes: {
-    "/api/analyze": ["./fixtures/seat-limit-race/**/*"],
-    "/api/verify": ["./fixtures/seat-limit-race/**/*"],
+    "/api/analyze": ["./fixtures/seat-limit-race/**/*", "./fixtures/replay/**/*"],
+    "/api/verify": ["./fixtures/seat-limit-race/**/*", "./fixtures/replay/**/*"],
   },
 };
 

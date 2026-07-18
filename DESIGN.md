@@ -14,7 +14,7 @@ Use a system sans stack for interface text and a system monospace stack for code
 
 ## Layout
 
-- Compact top bar and five-stage progress strip.
+- Compact top bar and three-step progress strip: ingest, map evidence, and verify gap.
 - Desktop split: proof graph at roughly two-thirds width, verification bench at one-third.
 - Exact-source evidence drawer spans the bottom.
 - Tablet stacks the bench beneath the graph; mobile presents a linear evidence ledger.

@@ -4,6 +4,7 @@ import { replayAnalysis, replayVerification } from "@/lib/replay";
 describe("verified replay artifacts", () => {
   it("contains three requirements and a validated R3 gap", async () => {
     const result = await replayAnalysis("request-test");
+    expect(result.replay?.kind).toBe("reference");
     expect(result.requirements).toHaveLength(3);
     expect(result.requirements.find((item) => item.id === "R3")?.status).toBe("unsupported");
     expect(result.requirements.flatMap((item) => item.evidence).every((item) => item.verified)).toBe(true);

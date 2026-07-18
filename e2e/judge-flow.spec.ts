@@ -15,19 +15,20 @@ test("judge flow locates and verifies the concurrency gap", async ({ page }, tes
   await page.screenshot({ path: testInfo.outputPath("counterexample.png"), fullPage: true });
 });
 
-test("exact evidence is keyboard reachable", async ({ page }) => {
+test("exact evidence is keyboard reachable", async ({ page, browserName }) => {
   await page.goto("/");
-  await page.keyboard.press("Tab");
-  await page.keyboard.press("Tab");
-  await expect(page.getByRole("button", { name: "Analyze the change" })).toBeFocused();
+  const tabKey = browserName === "webkit" ? "Alt+Tab" : "Tab";
+  const analyze = page.getByRole("button", { name: "Analyze the change" });
+  for (let step = 0; step < 6 && !(await analyze.evaluate((element) => element === document.activeElement)); step += 1) await page.keyboard.press(tabKey);
+  await expect(analyze).toBeFocused();
   await page.keyboard.press("Enter");
   const evidence = page.getByRole("button", { name: /tests\/seat-service\.test\.ts:13/ });
-  for (let step = 0; step < 6 && !(await evidence.evaluate((element) => element === document.activeElement)); step += 1) await page.keyboard.press("Tab");
+  for (let step = 0; step < 10 && !(await evidence.evaluate((element) => element === document.activeElement)); step += 1) await page.keyboard.press(tabKey);
   await expect(evidence).toBeFocused();
   await page.keyboard.press("Enter");
   await expect(page.getByRole("heading", { name: "Server-validated source excerpt" })).toBeVisible();
   await expect(page.getByText("Exact bytes matched")).toBeVisible();
-  await page.keyboard.press("Tab");
+  await page.keyboard.press(tabKey);
   await page.keyboard.press("Enter");
   await expect(evidence).toBeFocused();
 });
@@ -58,9 +59,26 @@ test("reduced motion and narrow layouts remain stable", async ({ page }) => {
 });
 
 test("retryable API errors offer an honest replay fallback", async ({ page }) => {
-  await page.route("**/api/analyze", async (route) => route.fulfill({ status: 503, contentType: "application/json", body: JSON.stringify({ error: "Temporary test outage" }) }));
+  await page.route("**/api/analyze", async (route) => {
+    if (route.request().headers()["x-gapwitness-replay"] === "1") return route.continue();
+    return route.fulfill({ status: 429, contentType: "application/json", body: JSON.stringify({ error: "The live demo budget guard is active." }) });
+  });
   await page.goto("/");
   await page.getByRole("button", { name: "Analyze the change" }).click();
-  await expect(page.locator(".error-state")).toContainText("Temporary test outage");
-  await expect(page.getByRole("button", { name: "Replay bundled reference run" })).toBeVisible();
+  await expect(page.locator(".error-state")).toContainText("budget guard");
+  await page.getByRole("button", { name: "Replay last available run" }).click();
+  await expect(page.getByText("Bundled reference replay · not a live run")).toBeVisible();
+});
+
+test("slow analysis keeps a stable progress state until results arrive", async ({ page }) => {
+  await page.route("**/api/analyze", async (route) => {
+    const response = await route.fetch({ headers: { ...route.request().headers(), "x-gapwitness-replay": "1" } });
+    await new Promise((resolve) => setTimeout(resolve, 350));
+    await route.fulfill({ response });
+  });
+  await page.goto("/");
+  await page.getByRole("button", { name: "Analyze the change" }).click();
+  await expect(page.getByRole("button", { name: "Analyzing evidence…" })).toBeDisabled();
+  await expect(page.getByRole("heading", { name: "What the change actually proves" })).toBeVisible();
+  await expect(page.getByText("Bundled reference replay · not a live run")).toBeVisible();
 });

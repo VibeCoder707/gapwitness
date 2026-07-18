@@ -1,11 +1,13 @@
 export const dynamic = "force-dynamic";
 
 export function GET() {
-  const liveReady = Boolean(process.env.OPENAI_API_KEY && process.env.OPENAI_FIXTURE_FILE_ID && process.env.DEMO_SIGNING_SECRET);
+  const publicDeployment = process.env.NODE_ENV === "production" || Boolean(process.env.VERCEL);
+  const signingReady = (process.env.DEMO_SIGNING_SECRET?.length ?? 0) >= 32 || !publicDeployment;
+  const liveReady = Boolean(process.env.OPENAI_API_KEY && process.env.OPENAI_FIXTURE_FILE_ID && signingReady && process.env.GAPWITNESS_DEMO_MODE !== "replay");
   return Response.json({
-    status: liveReady ? "ready" : "replay_only",
+    status: liveReady ? "ready" : signingReady ? "replay_only" : "unconfigured",
     liveReady,
-    replayReady: true,
+    replayReady: signingReady,
     fixture: "seat-limit-race",
     timestamp: new Date().toISOString(),
   }, { headers: { "Cache-Control": "no-store" } });

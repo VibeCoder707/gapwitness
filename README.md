@@ -14,7 +14,7 @@ The guided fixture looks reassuring: all 18 baseline tests pass. GapWitness show
 4. Select **Generate falsifying test**.
 5. Inspect the generated Vitest test and hosted shell failure: both requests succeed although only one should.
 
-The full flow is designed to finish in under three minutes. Until a real production run is captured, local and unconfigured deployments offer a clearly labeled bundled reference replay. It uses the same deterministic fixture but is never presented as fresh or previously verified model work.
+The full flow is designed to finish in under three minutes. After the production reliability gate, API outages use a sanitized replay of the last verified live run. Until that artifact exists, local and unconfigured deployments use a clearly labeled bundled reference replay. Neither path is presented as a new live run.
 
 ## Local setup
 
@@ -61,7 +61,8 @@ npm run build
 2. Import this repository into Vercel.
 3. Add the three required environment variables as Vercel secrets.
 4. Deploy, then confirm `/api/health` reports `liveReady: true` without revealing identifiers.
-5. Run five complete analysis and verification passes against production.
+5. Run `npm run gate:production -- https://your-production-host`. This performs five complete live passes, rejects any invalid evidence or run lasting three minutes or more, and writes sanitized proof to `artifacts/production-gate.json`.
+6. Review and commit `fixtures/replay/last-verified-run.json`, redeploy, and confirm an intentionally forced replay says **Replay of last verified run · not a new live run**. The artifact excludes continuation tokens, request IDs, response IDs, and container IDs.
 
 Set the OpenAI project budget to **$25 through August 9, 2026** in the project settings. Keep the public deployment available through at least August 10 at 02:00 CEST.
 
@@ -75,7 +76,7 @@ Primary Codex project task ID: `019f72a8-0ee4-7041-8b20-9e65108f671f`. Before su
 
 ## Supported platforms and accessibility
 
-The app targets current Chrome, Safari, Firefox, and Edge on desktop and tablet. Automated judge-flow coverage currently runs Chromium at desktop, tablet, and mobile widths; signed-off Safari, Firefox, and Edge checks remain a release task. The interface provides semantic landmarks, keyboard operation, visible focus, screen-reader progress announcements, non-color status marks, responsive stacking, and reduced-motion behavior. Automated Axe checks cover WCAG A and AA rules, with WCAG 2.2 AA as the release target.
+The app targets current Chrome, Safari, Firefox, and Edge on desktop and tablet. Automated judge-flow coverage runs Chromium, Firefox, and WebKit at desktop size plus Chromium at tablet and mobile widths. A final signed-out check in the released Chrome, Safari, Firefox, and Edge builds remains part of the production release gate. The interface provides semantic landmarks, keyboard operation, visible focus, screen-reader progress announcements, non-color status marks, responsive stacking, and reduced-motion behavior. Automated Axe checks cover WCAG A and AA rules, with WCAG 2.2 AA as the release target.
 
 ## License and attribution
 

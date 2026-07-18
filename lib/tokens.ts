@@ -7,6 +7,7 @@ function secret() {
   const value = process.env.DEMO_SIGNING_SECRET ?? fallbackSecret;
   const publicOrLive = process.env.NODE_ENV === "production" || Boolean(process.env.VERCEL) || Boolean(process.env.OPENAI_API_KEY);
   if (publicOrLive && value === fallbackSecret) throw new Error("DEMO_SIGNING_SECRET is required");
+  if (value.length < 32) throw new Error("DEMO_SIGNING_SECRET must contain at least 32 characters");
   return value;
 }
 

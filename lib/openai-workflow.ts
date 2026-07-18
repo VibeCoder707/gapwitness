@@ -140,6 +140,15 @@ function cleanTerminalOutput(value: string) {
   return value.replace(/\u001b\[[0-9;]*m/g, "").slice(0, 8_000);
 }
 
+function exactExecutedTest(executions: ShellExecution[]) {
+  const output = executions.map((execution) => `${execution.stdout}\n${execution.stderr}`).join("\n");
+  const match = output.match(/GAPWITNESS_TEST_BEGIN\r?\n([\s\S]*?)\r?\nGAPWITNESS_TEST_END/);
+  if (!match) throw new Error("Hosted shell did not return the exact generated test between verification markers");
+  const test = match[1].trim();
+  if (!test || test.length > 12_000) throw new Error("Hosted shell returned an invalid generated test artifact");
+  return test;
+}
+
 function verifiedBaseline(response: Record<string, unknown>, durationMs: number) {
   const execution = shellExecutions(response).find((item) => item.command.includes("npm run test:fixture"));
   if (!execution || execution.exitCode !== 0) throw new Error("Hosted baseline was not executed successfully");
@@ -262,7 +271,7 @@ function verificationRequest(claims: ContinuationClaims, programmatic: boolean) 
     model: "gpt-5.6-sol", previous_response_id: claims.responseId,
     reasoning: { effort: "high", context: "all_turns" },
     prompt_cache_key: "gapwitness:seat-limit-race:v1",
-    input: [{ role: "user", content: [{ type: "input_text", text: "For R3 only, write a deterministic Vitest counterexample to counterexample/generated.test.ts using a two-arrival barrier. The test must log exactly GAPWITNESS_RESULT fulfilled=<n> rejected=<n> active=<n> before assertions. Run npm run test:counterexample in the same hosted container. Return the test and semantic explanation, but the server will derive command, exit, stdout, and confirmation from the actual shell output." }] }],
+    input: [{ role: "user", content: [{ type: "input_text", text: "For R3 only, work in the existing /mnt/data/seat-limit-race fixture. Write a deterministic Vitest counterexample under 12,000 characters to counterexample/generated.test.ts using a two-arrival barrier. The test must log exactly GAPWITNESS_RESULT fulfilled=<n> rejected=<n> active=<n> before assertions. Run npm run test:counterexample. Then print the exact executed file between lines containing only GAPWITNESS_TEST_BEGIN and GAPWITNESS_TEST_END. In the structured evidence, cite only exact immutable fixture source or issue lines that explain the race, never the generated file. The server will derive the test, command, exit, stdout, and confirmation from actual shell output." }] }],
     tools,
     text: { format: { type: "json_schema", name: "gapwitness_verification", strict: true, schema: verificationJsonSchema } },
     max_output_tokens: 5_000, max_tool_calls: 6, parallel_tool_calls: false,
@@ -277,7 +286,7 @@ export async function runVerification(claims: ContinuationClaims, requestId: str
   report("generate", "Continuing the same reasoning trace to generate a barrier test");
   const client = openAIClient();
   report("run", "Running the generated test in the hosted container");
-  let response: Record<string, unknown> & { output_text?: string };
+  let response: Record<string, unknown> & { id: string; output_text?: string };
   try {
     response = await client.responses.create(verificationRequest(claims, true) as never, { signal }) as unknown as typeof response;
   } catch (firstError) {
@@ -285,19 +294,37 @@ export async function runVerification(claims: ContinuationClaims, requestId: str
     report("fallback", "Programmatic orchestration did not start. Retrying verification with the hosted shell directly.");
     response = await client.responses.create(verificationRequest(claims, false) as never, { signal }) as unknown as typeof response;
   }
-  const parsed = modelVerificationSchema.parse(JSON.parse(response.output_text ?? "{}"));
-  const validated = await validateEvidenceList(parsed.evidence.map((ref) => ({ ...ref, verified: false })));
-  const execution = shellExecutions(response).find((item) => item.command.includes("npm run test:counterexample"));
+  const executionResponse = response;
+  const usageRuns = [usageFrom(response)];
+  let parsed = modelVerificationSchema.parse(JSON.parse(response.output_text ?? "{}"));
+  let validated = await validateEvidenceList(parsed.evidence.map((ref) => ({ ...ref, verified: false })));
+  if (validated.length === 0 || validated.some((ref) => !ref.verified)) {
+    report("validation", "Retrying one verification citation against the immutable source");
+    const correction = await client.responses.create({
+      model: "gpt-5.6-sol", previous_response_id: response.id,
+      reasoning: { effort: "high", context: "all_turns" },
+      input: [{ role: "user", content: [{ type: "input_text", text: "The verification citation failed exact server validation. Without running tools, return the complete verification JSON again with a minimal verbatim citation to the immutable src/seat-service.ts check-then-insert race. Keep the other semantic fields faithful to the test already run." }] }],
+      text: { format: { type: "json_schema", name: "gapwitness_verification_retry", strict: true, schema: verificationJsonSchema } },
+      max_output_tokens: 3_500,
+    } as never, { signal }) as unknown as typeof response;
+    usageRuns.push(usageFrom(correction));
+    parsed = modelVerificationSchema.parse(JSON.parse(correction.output_text ?? "{}"));
+    validated = await validateEvidenceList(parsed.evidence.map((ref) => ({ ...ref, verified: false })));
+  }
+  const executions = shellExecutions(executionResponse);
+  const execution = executions.find((item) => item.command.includes("npm run test:counterexample"));
   if (!execution) throw new Error("Generated counterexample was not executed");
+  const generatedTest = exactExecutedTest(executions);
   const actualOutput = cleanTerminalOutput(`${execution.stdout}\n${execution.stderr}`);
   const sentinel = actualOutput.match(/GAPWITNESS_RESULT fulfilled=(\d+) rejected=(\d+) active=(\d+)/);
-  const generatedLooksBounded = parsed.generatedTest.includes("GAPWITNESS_RESULT") && parsed.generatedTest.includes("Promise.allSettled") && parsed.generatedTest.length <= 12_000;
-  const confirmed = execution.exitCode !== 0 && sentinel?.[1] === "2" && sentinel?.[2] === "0" && sentinel?.[3] === "2" && generatedLooksBounded;
+  const generatedLooksBounded = generatedTest.includes("GAPWITNESS_RESULT") && generatedTest.includes("Promise.allSettled") && generatedTest.length <= 12_000;
+  const evidenceVerified = validated.length > 0 && validated.every((ref) => ref.verified);
+  const confirmed = execution.exitCode !== 0 && sentinel?.[1] === "2" && sentinel?.[2] === "0" && sentinel?.[3] === "2" && generatedLooksBounded && evidenceVerified;
   return {
-    mode: "live", requirementId: "R3", generatedTest: parsed.generatedTest, command: execution.command,
+    mode: "live", requirementId: "R3", generatedTest, command: execution.command,
     exitCode: execution.exitCode ?? -1, stdout: actualOutput, expectedBehavior: parsed.expectedBehavior,
     observedBehavior: confirmed ? "Both requests succeeded after reading the same pre-insert count; the active seat count became 2." : parsed.observedBehavior,
     status: confirmed ? "counterexample_confirmed" : "not_reproduced", evidence: validated,
-    usage: usageFrom(response), requestId,
+    usage: combineUsage(...usageRuns), requestId,
   };
 }

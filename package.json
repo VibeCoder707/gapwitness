@@ -14,7 +14,9 @@
     "test:fixture": "vitest run fixtures/seat-limit-race/tests/seat-service.test.ts",
     "test:counterexample": "vitest run --config vitest.counterexample.config.ts",
     "test:e2e": "playwright test",
-    "fixture:bundle": "bash scripts/package-fixture.sh"
+    "fixture:bundle": "bash scripts/package-fixture.sh",
+    "smoke:replay": "node scripts/smoke-replay.mjs",
+    "gate:production": "node scripts/production-gate.mjs"
   },
   "dependencies": {
     "next": "16.2.10",

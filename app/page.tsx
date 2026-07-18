@@ -133,7 +133,7 @@ export default function Home() {
           <li className={["analyzed", "verifying", "verified"].includes(phase) ? "done" : ""} aria-current={phase === "analyzed" ? "step" : undefined}>Map evidence<span className="sr-only"> {phase === "analyzed" ? "current" : ["verifying", "verified"].includes(phase) ? "complete" : "pending"}</span></li>
           <li className={phase === "verified" ? "done" : ""} aria-current={phase === "verifying" || phase === "verified" ? "step" : undefined}>Verify gap<span className="sr-only"> {phase === "verified" ? "complete" : phase === "verifying" ? "current" : "pending"}</span></li>
         </ol>
-        {analysis?.mode === "replay" && <span className="replay-badge">Bundled reference replay · not a live run</span>}
+        {analysis?.mode === "replay" && <span className="replay-badge">{analysis.replay?.label ?? "Replay · not a live run"}</span>}
       </section>
 
       <div className="workspace">
@@ -193,7 +193,7 @@ export default function Home() {
             </div>
           )}
           {error && (
-            <div className="error-state" role="alert"><strong>Run interrupted</strong><p>{error}</p><button onClick={() => analyze()}>Retry live analysis</button><button className="text-action" onClick={() => analyze(true)}>Replay bundled reference run</button></div>
+            <div className="error-state" role="alert"><strong>Run interrupted</strong><p>{error}</p><button onClick={() => analyze()}>Retry live analysis</button><button className="text-action" onClick={() => analyze(true)}>Replay last available run</button></div>
           )}
           {(analysis || verification) && (
             <details className="run-details">

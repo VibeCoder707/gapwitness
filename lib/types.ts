@@ -31,6 +31,7 @@ export type UsageMetrics = {
 
 export type AnalysisResult = {
   mode: RunMode;
+  replay?: { kind: "reference" | "last_verified"; label: string; capturedAt?: string };
   fixture: { id: "seat-limit-race"; title: string; revision: string };
   baseline: { command: string; passed: number; failed: number; durationMs: number; stdout: string };
   requirements: RequirementProof[];
@@ -42,6 +43,7 @@ export type AnalysisResult = {
 
 export type VerificationResult = {
   mode: RunMode;
+  replay?: { kind: "reference" | "last_verified"; label: string; capturedAt?: string };
   requirementId: "R3";
   generatedTest: string;
   command: string;

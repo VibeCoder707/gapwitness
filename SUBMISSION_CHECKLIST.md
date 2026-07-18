@@ -4,16 +4,17 @@ Internal cutoff: **July 21, 2026 at 18:00 CEST**. Official rules deadline: **Jul
 
 ## Eligibility and ownership
 
-- [ ] Solo entrant eligibility, legal majority, supported residence, and absence of prohibited conflicts confirmed.
-- [ ] All code, sample data, narration, screenshots, and video content owned or properly licensed.
-- [ ] Repository history shows creation during the July 13–21 submission period.
+- [x] Solo entrant eligibility, legal majority, supported residence, and absence of prohibited conflicts confirmed by the entrant’s stated assumptions.
+- [x] Current code and sample data are owned or properly licensed; recheck final narration, screenshots, and video before submission.
+- [x] Repository history shows creation during the July 13–21 submission period.
 
 ## Product readiness
 
 - [ ] Production `/api/health` reports `liveReady: true` and exposes no identifiers or secrets.
 - [ ] Five consecutive production runs locate R3, validate every citation, and confirm the counterexample.
-- [ ] Verified replay is available and unmistakably labeled.
-- [ ] Keyboard, screen-reader announcements, reduced motion, desktop, and tablet checks pass.
+- [ ] The five-run gate has captured a last-verified replay and it is unmistakably labeled as not new.
+- [x] Automated keyboard, reduced-motion, WCAG A/AA, Chromium, Firefox, WebKit, desktop, tablet, and mobile checks pass.
+- [ ] Manual screen-reader and signed-out checks pass in released Chrome, Safari, Firefox, and Edge.
 - [ ] OpenAI project budget is capped at $25 through August 9.
 - [ ] Vercel deployment will remain public through at least August 10 at 02:00 CEST.
 
@@ -22,7 +23,7 @@ Internal cutoff: **July 21, 2026 at 18:00 CEST**. Official rules deadline: **Jul
 - [ ] Public MIT repository URL added to README and Devpost.
 - [ ] Live demo URL added prominently to README and Devpost.
 - [ ] Clean install, test, and deployment instructions verified from a fresh checkout.
-- [ ] `THIRD_PARTY_NOTICES.md`, `DECISIONS.md`, and dated commits checked.
+- [x] `THIRD_PARTY_NOTICES.md`, `DECISIONS.md`, and dated commits checked.
 - [ ] Run `/feedback` in primary task `019f72a8-0ee4-7041-8b20-9e65108f671f` and record the returned Session ID: `PENDING`.
 
 ## Video — public YouTube, target 2:40–2:50

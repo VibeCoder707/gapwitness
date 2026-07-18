@@ -16,12 +16,19 @@ describe("continuation tokens", () => {
   it("rejects tampering", () => {
     vi.stubEnv("DEMO_SIGNING_SECRET", "test-secret-that-is-long-enough-for-hmac");
     const token = signContinuation(claims());
-    expect(() => verifyContinuation(`${token.slice(0, -1)}x`)).toThrow("Invalid continuation token");
+    const [payload, signature] = token.split(".");
+    const replacement = signature.startsWith("a") ? "b" : "a";
+    expect(() => verifyContinuation(`${payload}.${replacement}${signature.slice(1)}`)).toThrow("Invalid continuation token");
   });
 
   it("rejects expired claims", () => {
     vi.stubEnv("DEMO_SIGNING_SECRET", "test-secret-that-is-long-enough-for-hmac");
     const token = signContinuation({ ...claims(), exp: Date.now() - 1 });
     expect(() => verifyContinuation(token)).toThrow("expired");
+  });
+
+  it("rejects a short signing secret", () => {
+    vi.stubEnv("DEMO_SIGNING_SECRET", "too-short");
+    expect(() => signContinuation(claims())).toThrow("at least 32 characters");
   });
 });
