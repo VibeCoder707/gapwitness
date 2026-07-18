@@ -42,7 +42,7 @@ if (!/^sk-[A-Za-z0-9_-]{20,}$/.test(apiKey)) throw new Error("That does not look
 
 const destination = path.join(process.cwd(), ".env.local");
 const existing = await readFile(destination, "utf8").catch(() => "");
-const signingSecret = existingValue(existing, "DEMO_SIGNING_SECRET") || randomBytes(48).toString("base64url");
+const signingSecret = randomBytes(48).toString("base64url");
 const contents = [
   `OPENAI_API_KEY=${apiKey}`,
   `OPENAI_FIXTURE_FILE_ID=${existingValue(existing, "OPENAI_FIXTURE_FILE_ID")}`,
@@ -54,4 +54,4 @@ const contents = [
 
 await writeFile(destination, contents, { encoding: "utf8", mode: 0o600 });
 await chmod(destination, 0o600);
-console.info("Saved .env.local with the API key and a generated signing secret. The API key was not displayed.");
+console.info("Saved .env.local with the API key and a newly generated signing secret. Neither secret was displayed.");

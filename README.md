@@ -28,7 +28,7 @@ npm run setup:secrets
 npm run dev
 ```
 
-The setup command accepts the API key through a hidden Terminal prompt, creates `.env.local` with private file permissions, and generates the signing secret. Open `http://localhost:3000`. Until the fixture file ID is added, the app intentionally uses its bundled reference replay.
+The setup command accepts the API key through a hidden Terminal prompt, creates `.env.local` with private file permissions, and generates a new signing secret every time it runs. Open `http://localhost:3000`. Until the fixture file ID is added, the app intentionally uses its bundled reference replay.
 
 Environment variables:
 
